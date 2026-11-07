@@ -1,0 +1,68 @@
+---
+import { Image } from 'astro:assets';
+import Reveal from 'astro-reveal/Reveal.astro';
+
+const { imagen, alt, titulo, tecnica, index } = Astro.props; // <-- Añadimos titulo y tecnica
+const delay = index < 6 ? index * 150 : 0; 
+---
+
+<Reveal animation="up" distance="3rem" delay={delay} mode="observer">
+  <div class="obra-wrapper">
+    <div class="obra-imagen-container">
+      <Image src={imagen} alt={alt} loading="lazy" class="obra-img" />
+    </div>
+    
+    <!-- NUEVA CARTELA -->
+    <div class="obra-info">
+      <h3>{titulo}</h3>
+      <p>{tecnica}</p>
+    </div>
+  </div>
+</Reveal>
+
+<style>
+  .obra-wrapper {
+    background-color: transparent;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+  }
+
+  .obra-wrapper:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.25);
+  }
+
+  /* Separamos la imagen del texto por si hay transparencias */
+  .obra-imagen-container {
+    background-color: #f8f7f4; 
+  }
+
+  .obra-img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* ESTILOS DE LA CARTELA */
+  .obra-info {
+    padding: 1.5rem 1rem;
+    text-align: center;
+  }
+
+  .obra-info h3 {
+    margin: 0 0 0.25rem 0;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: #1a1a1a;
+  }
+
+  .obra-info p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #666;
+    font-style: italic;
+  }
+</style>

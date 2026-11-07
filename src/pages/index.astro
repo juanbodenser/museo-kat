@@ -1,11 +1,208 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import ObraCard from '../components/ObraCard.astro';
+import datosObras from '../data/obras.json';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const imagenes = import.meta.glob('../assets/obras/*.{jpg,png,jpeg}', { eager: true });
+
+const obras = Object.keys(imagenes).map((ruta) => {
+  const nombreArchivo = ruta.split('/').pop() || ''; 
+  const info = datosObras[nombreArchivo] || { titulo: "Sin título", tecnica: "Año desconocido" };
+
+  return {
+    imagen: imagenes[ruta].default,
+    alt: info.titulo,
+    titulo: info.titulo,
+    tecnica: info.tecnica,
+    nombreArchivo: nombreArchivo // <-- AÑADIMOS ESTO para poder ordenar
+  };
+});
+
+// Ordenamos por el nombre del archivo (obra-01, obra-02...)
+obras.sort((a, b) => a.nombreArchivo.localeCompare(b.nombreArchivo));
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="Feliz Cumpleaños">
+    <!-- Cabecera emotiva (La entrada al museo) -->
+  <header class="hero">
+    <!-- Globos decorativos de fondo -->
+    <div class="globo globo-1"></div>
+    <div class="globo globo-2"></div>
+    <div class="globo globo-3"></div>
+
+    <div class="hero-contenido">
+      <h1>Feliz<br/>Cumpleaños</h1>
+      <p>Un pequeño museo con todas tus obras. Gracias por pintar nuestro mundo de color.</p>
+    </div>
+  </header>
+
+  <!-- NUEVO BLOQUE DE BIENVENIDA -->
+  <section class="bienvenida">
+    <h2>Bienvenidos al Museo de Kat</h2>
+  </section>
+
+  <!-- Galería con CSS Grid Nativo -->
+  <section class="galeria">
+    <div class="grid-obras">
+            {obras.map((obra, index) => (
+        <ObraCard 
+          imagen={obra.imagen} 
+          alt={obra.alt} 
+          titulo={obra.titulo} 
+          tecnica={obra.tecnica} 
+          index={index} 
+        />
+      ))}
+    </div>
+  </section>
+
+  <footer class="despedida">
+    <p>Con todo mi amor, para la artista más importante de mi vida.</p>
+  </footer>
 </Layout>
+
+<style>
+    /* LA PORTADA (Igual de ancha que los cuadros) */
+  .hero {
+    position: relative; /* Para que los globos se coloquen respecto a esta caja */
+    max-width: 900px; /* Mismo ancho que la galería */
+    margin: 6rem auto 10rem; /* Centrado, con espacio arriba y abajo */
+    padding: 6rem 2rem;
+    text-align: center;
+    background-color: #fff; /* Una tarjeta blanca como las obras */
+    border-radius: 16px;
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    overflow: hidden; /* Para que los globos no se salgan de la tarjeta */
+  }
+
+  /* LA PORTADA */
+  .hero {
+    position: relative; 
+    max-width: 900px; 
+    margin: 6rem auto 2rem; /* Reducimos el margen de abajo a 2rem para acercar el siguiente bloque */
+    padding: 6rem 2rem;
+    text-align: center;
+    background-color: #ffffff; /* Blanco puro para que resalten los globos */
+    border-radius: 16px;
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1); 
+    overflow: hidden; 
+  }
+
+  .hero-contenido {
+    position: relative;
+    z-index: 10;
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    color: #111;
+    text-shadow: 0 2px 10px rgba(255,255,255, 0.8); /* Sombra blanca al texto para que resalte sobre los colores */
+  }
+
+  .hero p {
+    font-size: 1.3rem;
+    color: #222; /* Un gris más oscuro para que se lea bien */
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto;
+    font-weight: 600; /* Un poco más de peso para que no se pierda con el fondo */
+  }
+
+  /* --- LOS GLOBOS (Más fuertes y definidos) --- */
+  .globo {
+    position: absolute;
+    border-radius: 50%;
+    /* Quitamos el filtro blur o lo dejamos muy bajito */
+    filter: blur(10px); 
+    opacity: 0.8; /* Más opacos */
+    z-index: 1;
+  }
+
+  .globo-1 {
+    width: 250px;
+    height: 250px;
+    background-color: #ff8a80; /* Rosa fuerte */
+    top: -30px;
+    left: -30px;
+  }
+
+  .globo-2 {
+    width: 300px;
+    height: 300px;
+    background-color: #82b1ff; /* Azul fuerte */
+    bottom: -80px;
+    right: -50px;
+  }
+
+  .globo-3 {
+    width: 200px;
+    height: 200px;
+    background-color: #ffd54f; /* Amarillo fuerte */
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .galeria {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem 4rem;
+  }
+
+  /* EL MOSAICO CON CSS GRID */
+  .grid-obras {
+    display: grid;
+    /* CAMBIO CLAVE: 1 sola columna */
+    grid-template-columns: 1fr; 
+    gap: 12rem; /* ¡Mucho más espacio vertical entre cuadro y cuadro! */
+    align-items: center; 
+    max-width: 700px; /* Limitamos el ancho para que el cuadro no se haga gigante en pantallas grandes */
+    margin: 0 auto; /* Centramos la galería en la pantalla */
+  }
+
+  /* Para las pantallas más pequeñas (tablets y móviles) */
+  @media (max-width: 1024px) {
+    .grid-obras {
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .grid-obras {
+      grid-template-columns: 1fr; /* 1 columna en móvil */
+    }
+  }
+
+  /* --- NUEVO BLOQUE BIENVENIDA --- */
+  .bienvenida {
+    max-width: 900px; /* Mismo ancho que la galería */
+    margin: 0 auto 10rem; /* Mucho espacio abajo para que la galería empiece relajada */
+    text-align: center;
+  }
+
+  .bienvenida h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 400;
+    color: #1a1a1a;
+    margin: 0;
+    letter-spacing: 0.02em;
+  }
+
+  .despedida {
+    text-align: center;
+    padding: 6rem 2rem;
+    font-style: italic;
+    font-size: 1.2rem;
+    color: #777;
+    border-top: 1px solid #e0e0e0;
+    max-width: 900px; /* Mismo ancho */
+    margin: 0 auto 6rem auto; /* Espacio extra abajo del todo */
+  }
+</style>
