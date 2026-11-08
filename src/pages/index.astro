@@ -14,18 +14,16 @@ const obras = Object.keys(imagenes).map((ruta) => {
     alt: info.titulo,
     titulo: info.titulo,
     tecnica: info.tecnica,
-    nombreArchivo: nombreArchivo // <-- AÑADIMOS ESTO para poder ordenar
+    nombreArchivo: nombreArchivo
   };
 });
 
-// Ordenamos por el nombre del archivo (obra-01, obra-02...)
 obras.sort((a, b) => a.nombreArchivo.localeCompare(b.nombreArchivo));
 ---
 
 <Layout title="Feliz Cumpleaños">
-    <!-- Cabecera emotiva (La entrada al museo) -->
+  <!-- Cabecera emotiva (La entrada al museo) -->
   <header class="hero">
-    <!-- Globos decorativos de fondo -->
     <div class="globo globo-1"></div>
     <div class="globo globo-2"></div>
     <div class="globo globo-3"></div>
@@ -44,7 +42,7 @@ obras.sort((a, b) => a.nombreArchivo.localeCompare(b.nombreArchivo));
   <!-- Galería con CSS Grid Nativo -->
   <section class="galeria">
     <div class="grid-obras">
-            {obras.map((obra, index) => (
+      {obras.map((obra, index) => (
         <ObraCard 
           imagen={obra.imagen} 
           alt={obra.alt} 
@@ -62,27 +60,14 @@ obras.sort((a, b) => a.nombreArchivo.localeCompare(b.nombreArchivo));
 </Layout>
 
 <style>
-    /* LA PORTADA (Igual de ancha que los cuadros) */
-  .hero {
-    position: relative; /* Para que los globos se coloquen respecto a esta caja */
-    max-width: 900px; /* Mismo ancho que la galería */
-    margin: 6rem auto 10rem; /* Centrado, con espacio arriba y abajo */
-    padding: 6rem 2rem;
-    text-align: center;
-    background-color: #fff; /* Una tarjeta blanca como las obras */
-    border-radius: 16px;
-    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1); /* Sombra suave */
-    overflow: hidden; /* Para que los globos no se salgan de la tarjeta */
-  }
-
   /* LA PORTADA */
   .hero {
     position: relative; 
     max-width: 900px; 
-    margin: 6rem auto 2rem; /* Reducimos el margen de abajo a 2rem para acercar el siguiente bloque */
+    margin: 6rem auto 2rem; 
     padding: 6rem 2rem;
     text-align: center;
-    background-color: #ffffff; /* Blanco puro para que resalten los globos */
+    background-color: #ffffff; 
     border-radius: 16px;
     box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1); 
     overflow: hidden; 
@@ -101,32 +86,31 @@ obras.sort((a, b) => a.nombreArchivo.localeCompare(b.nombreArchivo));
     line-height: 1.1;
     margin-bottom: 1.5rem;
     color: #111;
-    text-shadow: 0 2px 10px rgba(255,255,255, 0.8); /* Sombra blanca al texto para que resalte sobre los colores */
+    text-shadow: 0 2px 10px rgba(255,255,255, 0.8); 
   }
 
   .hero p {
     font-size: 1.3rem;
-    color: #222; /* Un gris más oscuro para que se lea bien */
+    color: #222; 
     line-height: 1.6;
     max-width: 600px;
     margin: 0 auto;
-    font-weight: 600; /* Un poco más de peso para que no se pierda con el fondo */
+    font-weight: 600; 
   }
 
-  /* --- LOS GLOBOS (Más fuertes y definidos) --- */
+  /* LOS GLOBOS */
   .globo {
     position: absolute;
     border-radius: 50%;
-    /* Quitamos el filtro blur o lo dejamos muy bajito */
     filter: blur(10px); 
-    opacity: 0.8; /* Más opacos */
+    opacity: 0.8; 
     z-index: 1;
   }
 
   .globo-1 {
     width: 250px;
     height: 250px;
-    background-color: #ff8a80; /* Rosa fuerte */
+    background-color: #ff8a80; 
     top: -30px;
     left: -30px;
   }
@@ -134,7 +118,7 @@ obras.sort((a, b) => a.nombreArchivo.localeCompare(b.nombreArchivo));
   .globo-2 {
     width: 300px;
     height: 300px;
-    background-color: #82b1ff; /* Azul fuerte */
+    background-color: #82b1ff; 
     bottom: -80px;
     right: -50px;
   }
@@ -142,47 +126,16 @@ obras.sort((a, b) => a.nombreArchivo.localeCompare(b.nombreArchivo));
   .globo-3 {
     width: 200px;
     height: 200px;
-    background-color: #ffd54f; /* Amarillo fuerte */
+    background-color: #ffd54f; 
     top: 40%;
     left: 50%;
     transform: translate(-50%, -50%);
   }
 
-  .galeria {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 2rem 4rem;
-  }
-
-  /* EL MOSAICO CON CSS GRID */
-  .grid-obras {
-    display: grid;
-    /* CAMBIO CLAVE: 1 sola columna */
-    grid-template-columns: 1fr; 
-    gap: 12rem; /* ¡Mucho más espacio vertical entre cuadro y cuadro! */
-    align-items: center; 
-    max-width: 600px; /* Limitamos el ancho para que el cuadro no se haga gigante en pantallas grandes */
-    margin: 0 auto; /* Centramos la galería en la pantalla */
-  }
-
-  /* Para las pantallas más pequeñas (tablets y móviles) */
-  @media (max-width: 1024px) {
-    .grid-obras {
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 2rem;
-    }
-  }
-
-  @media (max-width: 640px) {
-    .grid-obras {
-      grid-template-columns: 1fr; /* 1 columna en móvil */
-    }
-  }
-
-  /* --- NUEVO BLOQUE BIENVENIDA --- */
+  /* BLOQUE BIENVENIDA */
   .bienvenida {
-    max-width: 900px; /* Mismo ancho que la galería */
-    margin: 0 auto 10rem; /* Mucho espacio abajo para que la galería empiece relajada */
+    max-width: 900px; 
+    margin: 0 auto 10rem; 
     text-align: center;
   }
 
@@ -195,6 +148,29 @@ obras.sort((a, b) => a.nombreArchivo.localeCompare(b.nombreArchivo));
     letter-spacing: 0.02em;
   }
 
+  /* GALERÍA Y GRID (1 COLUMNA) */
+  .galeria {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem 4rem;
+  }
+
+  .grid-obras {
+    display: grid;
+    grid-template-columns: 1fr; 
+    gap: 12rem; 
+    align-items: center; 
+    max-width: 600px; 
+    margin: 0 auto; 
+  }
+
+  @media (max-width: 640px) {
+    .grid-obras {
+      grid-template-columns: 1fr;
+      gap: 6rem; /* Menos espacio en móvil */
+    }
+  }
+
   .despedida {
     text-align: center;
     padding: 6rem 2rem;
@@ -202,7 +178,7 @@ obras.sort((a, b) => a.nombreArchivo.localeCompare(b.nombreArchivo));
     font-size: 1.2rem;
     color: #777;
     border-top: 1px solid #e0e0e0;
-    max-width: 900px; /* Mismo ancho */
-    margin: 0 auto 6rem auto; /* Espacio extra abajo del todo */
+    max-width: 900px; 
+    margin: 0 auto 6rem auto; 
   }
 </style>

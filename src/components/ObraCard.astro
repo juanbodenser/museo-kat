@@ -2,17 +2,19 @@
 import { Image } from 'astro:assets';
 import Reveal from 'astro-reveal/Reveal.astro';
 
-const { imagen, alt, titulo, tecnica, index } = Astro.props; // <-- Añadimos titulo y tecnica
+const { imagen, alt, titulo, tecnica, index } = Astro.props;
 const delay = index < 6 ? index * 150 : 0; 
+const dialogId = `dialogo-${index}`;
 ---
 
 <Reveal animation="up" distance="3rem" delay={delay} mode="observer">
   <div class="obra-wrapper">
     <div class="obra-imagen-container">
-      <Image src={imagen} alt={alt} loading="lazy" class="obra-img" />
+      <button class="btn-abrir" data-dialog={dialogId} aria-label={`Ver ${titulo} en grande`}>
+        <Image src={imagen} alt={alt} loading="lazy" class="obra-img" />
+      </button>
     </div>
     
-    <!-- NUEVA CARTELA -->
     <div class="obra-info">
       <h3>{titulo}</h3>
       <p>{tecnica}</p>
@@ -20,7 +22,57 @@ const delay = index < 6 ? index * 150 : 0;
   </div>
 </Reveal>
 
+<!-- LA VENTANA MODAL (LIGHTBOX) -->
+<dialog id={dialogId} class="lightbox">
+  <!-- La caja interior es la que tiene el fondo negro -->
+  <div class="lightbox-contenido">
+    <button class="btn-cerrar" aria-label="Cerrar">&times;</button>
+    <Image src={imagen} alt={alt} class="lightbox-img" style="cursor: default;" />
+    <div class="lightbox-texto">
+      <h3>{titulo}</h3>
+      <p>{tecnica}</p>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Abrir
+    const botonesAbrir = document.querySelectorAll('.btn-abrir');
+    botonesAbrir.forEach(boton => {
+      boton.addEventListener('click', () => {
+        const idDialogo = boton.getAttribute('data-dialog');
+        const dialogo = document.getElementById(idDialogo);
+        if (dialogo) dialogo.showModal();
+      });
+    });
+
+    // Cerrar con la X
+    const botonesCerrar = document.querySelectorAll('.btn-cerrar');
+    botonesCerrar.forEach(boton => {
+      boton.addEventListener('click', () => {
+        boton.closest('dialog').close();
+      });
+    });
+
+    // Cerrar al hacer clic en el fondo negro
+    const dialogos = document.querySelectorAll('dialog.lightbox');
+    dialogos.forEach(dialogo => {
+      const contenido = dialogo.querySelector('.lightbox-contenido');
+      if (contenido) {
+        contenido.addEventListener('click', (e) => {
+          // Si el clic es en el contenedor y no en la imagen/texto, cerrar
+          if (e.target === contenido) {
+            dialogo.close();
+          }
+        });
+      }
+    });
+  });
+</script>
+
 <style>
+  /* TARJETA EN LA GALERÍA */
   .obra-wrapper {
     background-color: transparent;
     border-radius: 12px;
@@ -35,7 +87,6 @@ const delay = index < 6 ? index * 150 : 0;
     box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.25);
   }
 
-  /* Separamos la imagen del texto por si hay transparencias */
   .obra-imagen-container {
     background-color: #f8f7f4; 
   }
@@ -46,7 +97,15 @@ const delay = index < 6 ? index * 150 : 0;
     height: auto;
   }
 
-  /* ESTILOS DE LA CARTELA */
+  .btn-abrir {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: zoom-in;
+    display: block;
+    width: 100%;
+  }
+
   .obra-info {
     padding: 1.5rem 1rem;
     text-align: center;
@@ -64,5 +123,89 @@ const delay = index < 6 ? index * 150 : 0;
     font-size: 0.9rem;
     color: #666;
     font-style: italic;
+  }
+
+  /* --- ESTILOS DEL LIGHTBOX (VENTANA MODAL) --- */
+  .lightbox {
+    border: none;
+    background: transparent; /* El diálogo no tiene fondo */
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+  }
+  
+  /* El fondo oscuro lo lleva la caja interior */
+  .lightbox-contenido {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.9); /* Aquí está el fondo negro */
+    backdrop-filter: blur(5px);
+    box-sizing: border-box;
+    padding: 2rem;
+    cursor: zoom-out;
+  }
+
+  .lightbox-img {
+    max-width: 90vw;
+    max-height: 75vh;
+    object-fit: contain;
+    border-radius: 4px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  }
+
+  .lightbox-texto {
+    text-align: center;
+    color: #fff;
+    margin-top: 1.5rem;
+    cursor: default; /* Para que el texto no tenga la lupa */
+  }
+
+  .lightbox-texto h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .lightbox-texto p {
+    font-size: 1rem;
+    color: #ccc;
+    margin: 0;
+    font-style: italic;
+  }
+
+  .btn-cerrar {
+    position: absolute;
+    top: 2rem;
+    right: 3rem;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 3rem;
+    cursor: pointer;
+    line-height: 1;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+    z-index: 10;
+  }
+
+  .btn-cerrar:hover {
+    opacity: 1;
+  }
+
+  @media (max-width: 768px) {
+    .btn-cerrar {
+      top: 1rem;
+      right: 1.5rem;
+    }
+    .lightbox-texto h3 {
+      font-size: 1.4rem;
+    }
   }
 </style>
